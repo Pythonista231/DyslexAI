@@ -4,7 +4,8 @@ To run: 148.100.109.82:38888 is the IP address of our server, enter in web brows
 The code available on there is one which you can run on jupyter notebook. However, for a full UI, please refer to DyslexAIFullUI.py file in this repo (you will need your own OPEANI api key).
 
 
-
+_________________________________________
+_________________________________________
 
 
 
