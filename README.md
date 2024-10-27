@@ -60,14 +60,17 @@ students who would otherwise struggle without knowing why.
 Dyslexia diagnosis should be available to all. 
 
 ## The solution:
-The solution combines several data points, such as word corrections,
-spelling mistakes, case mistakes, letter joining, writing ledgibility
-and alignment – all coming together in a proprietary logistic regression
+The solution combines several data points, including % word corrections,
+% spelling mistakes, % case mistakes, letter joining, writing ledgibility
+and writing alignment – all coming together in a proprietary logistic regression
 model which outputs a percentage chance of dislexya from one's 
 handwriting sample. Furthermore, we also utilise state of the art 
 multimodel vision LLMs in order to enable us to label the 
-handwriting image a user inputs, before we pass it on to our custom ML model.  
+handwriting image a user inputs, before we pass it on to our custom ML model.
 
+This is all supercharged by IBM's snapML library, providing fast training and inference on Generalised Linear Models (LogReg in our case).
+
+## Inclusivity and equality: 
 This is simple to use and is open to all. Requires a simple handwriting
 sample form the user, while enabling input in multiple languages. 
 Furthermore it is executed on IBM Z cloud, meaning no compute requirements
