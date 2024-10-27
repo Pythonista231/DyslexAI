@@ -8,8 +8,30 @@ However, for the full software with the Tkinter UI, please refer to DyslexAIFull
 This is becuase jupyter notebook doesn't support GUIs. 
 
 
+#To run DyslexAIFullUI.py please refer to this guide on commands to execute on your terminal. 
+
+##First, check python version 
+- python3 --version / python --version # (try both methods) if one of them returns a first number of '3', skip, else run the following: 
+- sudo apt-get install python3 / brew install python / alternatively download from website https://www.python.org/downloads/
+
+##Second, make sure pip is installed
+- pip3 --version / pip --version # (try both methods) if one of them returns a first number of '3', skip, else run the following: 
+- sudo apt-get install python3-pip
+- python3 -m pip install --upgrade pip
+
+## Required Modules
+- `openai`  (pip3 install openai)
+- `tkinter` (sudo apt-get install python3-tk)
+- `ttkbootstrap` (python3 -m pip install ttkbootstrap)
+- `snapml`  (pip3 install snapml)
+- `matplotlib` (pip3 install matplotlib)
+- `pandas` (pip3 install pandas)
+- `Pillow` (pip3 install Pillow)
+
+
 _________________________________________
 _________________________________________
+
 
 
 
