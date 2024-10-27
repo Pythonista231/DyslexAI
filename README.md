@@ -7,19 +7,19 @@ The code available on there is one which you can run on jupyter notebook.
 However, for the full software with the Tkinter UI, please refer to DyslexAIFullUI.py file in this repo (you will need your own OPEANI api key).
 This is becuase jupyter notebook doesn't support GUIs. 
 
+___________________________________________________________________
+## To run DyslexAIFullUI.py please refer to this guide on commands to execute on your terminal. 
 
-#To run DyslexAIFullUI.py please refer to this guide on commands to execute on your terminal. 
-
-##First, check python version 
+#### First, check python version 
 - python3 --version / python --version # (try both methods) if one of them returns a first number of '3', skip, else run the following: 
 - sudo apt-get install python3 / brew install python / alternatively download from website https://www.python.org/downloads/
 
-##Second, make sure pip is installed
+#### Second, make sure pip is installed
 - pip3 --version / pip --version # (try both methods) if one of them returns a first number of '3', skip, else run the following: 
 - sudo apt-get install python3-pip
 - python3 -m pip install --upgrade pip
 
-## Required Modules
+#### Required Modules
 - `openai`  (pip3 install openai)
 - `tkinter` (sudo apt-get install python3-tk)
 - `ttkbootstrap` (python3 -m pip install ttkbootstrap)
@@ -33,7 +33,8 @@ _________________________________________
 _________________________________________
 
 
-
+_________________________________________
+_________________________________________
 
 
 
