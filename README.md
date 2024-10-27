@@ -1,4 +1,4 @@
-### DyslexAI
+# DyslexAI
 Logistic Regression to automate dyslexia detection from a sample of handwriting. 
 
 ## Dyslexia: 
@@ -41,7 +41,7 @@ analytics to further empower the user through graphs/visualisations.
 It contains dyslexic and non dyslexic handwriting samples (supervised).
 This dataset will grow in the future to enable more accurate predictions. 
 
-# Important:
+### Important:
 Note: ML isn't perfect and inaccuracies are present. 
 
 
