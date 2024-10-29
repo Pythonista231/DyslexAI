@@ -36,7 +36,7 @@ LogRegModel = load_model()
 
 
 
-# this is a function which takes an image path and labels its features.
+# this is a function which takes an image path and labels its features. It returns a list of its features. 
 def label_image(image_path):
     global XInputs
 
@@ -47,7 +47,7 @@ def label_image(image_path):
     base64_image = encode_image(image_path)
 
     idx = image_path.rfind('.')
-    image_type = image_path[idx + 1:]
+    image_type = image_path[idx + 1: ]
 
     try: 
         response = client.chat.completions.create(
@@ -146,27 +146,25 @@ class Application(ttk.Window):
         self.title("Dyslexia Detection Application")
         self.geometry("1800x1200")
 
-        # Shared data
-        self.text_data = ''
 
         style = ttk.Style()
         style.theme_use('superhero')
 
-        #initialise widgets. 
+        #initialise widgets: 
         self.create_widgets()
 
     def create_widgets(self): 
         global frames
 
-        # Create sidebar
+        # sidebar
         self.sidebar = ttk.Frame(self, bootstyle="primary", width=200)
         self.sidebar.pack(side=LEFT, fill=BOTH)
 
-        # Logo or App Title
+        #  title
         self.logo_label = ttk.Label(self.sidebar, text="DyslexAI", font=("Helvetica", 20, "bold"), bootstyle="inverse-primary")
         self.logo_label.pack(pady=20)
 
-        # Navigation Buttons
+        # Navigation buttons
         self.nav_buttons = {}
         buttons = [("Home", self.show_home),
                    ("Upload", self.show_upload),
@@ -181,7 +179,7 @@ class Application(ttk.Window):
         self.container = ttk.Frame(self)
         self.container.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # for F in (HomePage, UploadPage, AnalysisPage, HelpPage):
+        #frames: 
         frames = {}
         for F in (HomePage, UploadPage, AnalysisPage):
             page_name = F.__name__
@@ -190,14 +188,10 @@ class Application(ttk.Window):
             frame.grid(row=0, column=0, sticky=NSEW)
             if F == AnalysisPage: 
                 frame.create_widgets()
-                
-
-            # the problem here is creting the object of AnalysisClass but before finishing creating that, it is asking frames["AnalysisPage"].result_labesl
-            #but there is no AnalysisPage in frames yet! 
 
         
 
-        self.show_frame("HomePage")
+        self.show_frame("HomePage") #default 
 
     def show_frame(self, page_name):
         frame = frames[page_name]
@@ -212,9 +206,6 @@ class Application(ttk.Window):
     def show_analysis(self):
         self.show_frame("AnalysisPage")
 
-    def show_help(self):
-        self.show_frame("HelpPage")
-
     def on_closing(self):
         self.destroy()
 
@@ -228,22 +219,14 @@ class HomePage(ttk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        # Title
+        #title
         title_label = ttk.Label(self, text="Welcome to DislexAI", font=("Helvetica", 24, "bold"), anchor="center", justify="center")
         title_label.pack(pady=20, fill="x", expand=True)
 
-        # Description
+        #description
         desc = "Empowering educators and individuals to detect Dyslexia early through Machine Learning."
         title_label = ttk.Label(self, text=desc, font=("Helvetica", 14), anchor="center", justify="center")
         title_label.pack(pady=10, fill="x", expand=True)
-
-        # Placeholder for Image or Animation
-        # You can add an image here if desired
-        # Example:
-        # img = ImageTk.PhotoImage(Image.open("path_to_image.png").resize((300, 300)))
-        # img_label = ttk.Label(self, image=img)
-        # img_label.image = img
-        # img_label.pack(pady=20)
 
 class UploadPage(ttk.Frame):
     def __init__(self, parent, controller):
@@ -255,11 +238,11 @@ class UploadPage(ttk.Frame):
 
     def create_widgets(self):
 
-        # Upload Area
+        # upload area
         title_label = ttk.Label(self, text="Upload A Handwriting Sample (~ 3 sentences)", font=("Helvetica", 18, "bold"), anchor="center", justify="center")
         title_label.pack(pady=40, fill="x", expand=True)
 
-        # Select Image Button
+        # select image button
         select_btn = ttk.Button(self, text="Select Handwriting Sample Image", command=self.select_image, bootstyle="success")
         select_btn.pack(pady=40)
 
@@ -268,11 +251,11 @@ class UploadPage(ttk.Frame):
         file_name_label = ttk.Label(self, textvariable=self.file_name_var, font=("Helvetica", 12))
         file_name_label.pack(pady=5)
 
-        # Image Preview
+        # image preview
         self.image_preview = ttk.Label(self, bootstyle="secondary", anchor="center")
         self.image_preview.pack(pady=10, padx=50, fill=BOTH, expand=True)
 
-        # Analysis Messages
+        # analysis messages (2): 
         self.analysis_message_var = tk.StringVar(value="")
         analysis_msg_label = ttk.Label(self, textvariable=self.analysis_message_var, font=("Helvetica", 12), wraplength=800, justify="center")
         analysis_msg_label.pack(pady=5)
@@ -318,6 +301,7 @@ class UploadPage(ttk.Frame):
 
 
         else:
+            # the openai api only accepts a few image file types. this is to accomodate for that. 
             Messagebox.show_warning("Invalid File", "Please select a valid image file.")
 
 class AnalysisPage(ttk.Frame):
@@ -336,23 +320,23 @@ class AnalysisPage(ttk.Frame):
         title_label = ttk.Label(main_layout, text="Image Analysis", font=("Helvetica", 20, "bold"))
         title_label.pack(pady=10)
 
-        # Start Analysis Button
+        # Start analysis button
         self.start_analysis_btn = ttk.Button(main_layout, text="Start Analysis", command=self.start_analysis, bootstyle="success")
         self.start_analysis_btn.pack(pady=10)
 
-        # Progress Bar
+        # Progress bar 
         self.progress = ttk.Progressbar(main_layout, mode='determinate', length=400)
         self.progress.pack(pady=10)
 
-        # Analysis Results Sections
+        # Analysis results sections
         results_frame = ttk.Frame(main_layout)
         results_frame.pack(pady=10, fill=BOTH, expand=True)
 
-        # Left Side: Graph and Factor Buttons
+        # Left Side: graph and factor buttons 
         left_frame = ttk.Frame(results_frame)
         left_frame.pack(side=LEFT, fill=BOTH, expand=True, padx=10)
-
-        # Factor Selection
+        
+        # features. 
         factors = ['% corrections to words', '% spelling error', '% case mistakes', 'joining', 'ledgibility', 'line alignment']
         self.factor_var = tk.StringVar(value=self.current_factor)
 
@@ -363,34 +347,26 @@ class AnalysisPage(ttk.Frame):
             btn = ttk.Radiobutton(button_frame, text=factor, variable=self.factor_var, value=factor, command=self.change_factor, bootstyle="info")
             btn.pack(side=LEFT, padx=2)
 
-        # Graph Title
+        # Graph title
         self.graph_title = ttk.Label(left_frame, text=self.current_factor, font=("Helvetica", 14, "bold"))
         self.graph_title.pack(pady=5)
 
-        #create a matplotlib figure: 
+        #matplotlib figure. 
         self.figure = plt.Figure(figsize=(5, 4), dpi=100)
         self.ax = self.figure.add_subplot(111)  # Create an Axes object
         self.canvas = FigureCanvasTkAgg(self.figure, master=left_frame)
         self.canvas.get_tk_widget().pack(fill = BOTH, expand=  True)       
 
-        # # Graph Area
-        # self.figure = plt.Figure(figsize=(5, 4), dpi=100)
-        # self.ax = self.figure.add_subplot(111)
-        # self.canvas = ttk.canvas(self, master=left_frame)
-        # self.canvas = FigureCanvasTkAgg(self.figure, master=left_frame)
-        # self.canvas.draw()
-        # self.canvas.get_tk_widget().pack()
-
         
-        # Right Side: Results
+        # Right side : results
         right_frame = ttk.Frame(results_frame)
         right_frame.pack(side=RIGHT, fill=BOTH, expand=True, padx=10)
 
-        # Percentages and Results Frame
+        # Percentages and results frame
         results_inner_frame = ttk.LabelFrame(right_frame, text="Analysis Results")
         results_inner_frame.pack(fill=BOTH, expand=True)
 
-        # Percentages Labels
+        # Percentages labels
         for factor in factors:
             frame = ttk.Frame(results_inner_frame)
             frame.pack(anchor="w", padx=10, pady=2)
@@ -401,7 +377,7 @@ class AnalysisPage(ttk.Frame):
             frames["AnalysisPage"].result_labels = getattr(self, 'result_labels', {})
             self.result_labels[factor] = val
 
-        # Dyslexia Probability
+        # Dyslexia prob: 
         dys_label = ttk.Label(results_inner_frame, text="% Chance of Dyslexia:", font=("Helvetica", 14, "bold"))
         dys_label.pack(pady=10)
         self.dyslexia_var = tk.StringVar(value="N/A")
