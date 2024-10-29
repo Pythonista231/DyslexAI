@@ -1,6 +1,5 @@
 
 import ttkbootstrap as ttk
-# import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs import Messagebox
 # from tkinter import filedialog
