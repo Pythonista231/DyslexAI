@@ -266,7 +266,7 @@ class UploadPage(ttk.Frame):
     def select_image(self):
         global image_path
         image_path = filedialog.askopenfilename(title="Select an Image File",
-                                               filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;"), ("All Files", "*.*")])
+                                               filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;")])
         if image_path:
             self.display_and_label_image(image_path)
 
