@@ -4,6 +4,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs import Messagebox
 # from tkinter import filedialog
 import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import time
 import pandas as pd
