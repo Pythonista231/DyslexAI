@@ -78,7 +78,7 @@ are needed. Furthermore, our software provides descriptive
 analytics to further empower the user through graphs/visualisations. 
 
 ## Data: 
-100 images have been collected from a public dataset (credits: srummanf (github account))
+200 images have been collected from a public dataset (credits: srummanf github account) for both training and testing. 
 It contains dyslexic and non dyslexic handwriting samples (supervised).
 This dataset will grow in the future to enable more accurate predictions. 
 
