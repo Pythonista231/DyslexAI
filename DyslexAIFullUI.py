@@ -15,28 +15,47 @@ from PIL import Image, ImageTk
 import tkinter as tk
 
 
-openai_api_key = '' # enter your api key there. 
+openai_api_key = 'enter your openai api key here. ' 
 client = OpenAI(api_key=openai_api_key)
 
 
-# Load data and train the model and will return it. 
-def load_model():
+def testModel(logRegModel): # this is a function that takes a logistic regression model as input and uses testing data to test its accuracy and performance. 
+    dfTest = pd.read_csv('"https://raw.githubusercontent.com/Pythonista231/DyslexAI/refs/heads/main/images_dataset%20(1).csv"') #loading the data from the csv file.    
+    
+    xTest = df.drop(columns=['image_path', 'dyslexic']).values  # features
+    yTest = df['dyslexic'].values  
+
+    yPredicted = model.predict(xTest)
+    accuracy = accuracy_score(yTest, yPred)
+    precition = precisionScore(yTest, yPred)
+    recall = recall_score(yTest, yPred)
+    f1 = f1_score(yTest, yPred)
+
+    print("Model Evaluation:")
+    print(f"Accuracy: {accuracy:.4f}")
+    print(f"Precision: {precision:.4f}")
+    print(f"Recall: {recall:.4f}")
+    print(f"F1 Score: {f1:.4f}")
+
+
+# function to load the data and train the model, then returns the LogReg model itself. 
+def loadModel():
     global LogRegModel, df
-    df = pd.read_csv("C:/Users/micha/Documents/IBMHackathon/images_dataset.csv")
+    df = pd.read_csv('https://raw.githubusercontent.com/Pythonista231/DyslexAI/refs/heads/main/trainingDataCSV.txt') #loads the data from csv file. 
     
     x = df.drop(columns=['image_path', 'dyslexic']).values  # features
-    y = df['dyslexic'].values
+    y = df['dyslexic'].values 
 
     LogRegModel = LogisticRegression()
     LogRegModel.fit(x, y)
     return LogRegModel
 
-LogRegModel = load_model()
+LogRegModel = loadModel()
 
 
 
-# this is a function which takes an image path and labels its features. It returns a list of its features. 
-def label_image(image_path):
+# this is a function which takes an image path and labels the values of its feature, this is so that it could then be used in logistic regression once labelled. 
+def labelImage(image_path):
     global XInputs
 
     def encode_image(image_path): 
@@ -48,7 +67,7 @@ def label_image(image_path):
     idx = image_path.rfind('.')
     image_type = image_path[idx + 1: ]
 
-    try: 
+    try: #openai api call to label the values of the first 3 features. this has to be done in order for the logistic regression model to be used. 
         response = client.chat.completions.create(
 
             model = 'gpt-4o', 
@@ -76,7 +95,7 @@ def label_image(image_path):
 
         )
     except Exception as e:
-        Messagebox.show_error(f"Error: {e}")
+        Messagebox.show_error(f"Error with openai api call: {e}")
         return
 
     list_response1 = response.choices[0].message.content.strip().split(',')
@@ -124,7 +143,7 @@ def label_image(image_path):
         )
         
     except Exception as e:
-        Messagebox.show_error(f"Error: {e}")
+        Messagebox.show_error(f"Error with openai api call: {e}")
         return
 
     list_response2 = response2.choices[0].message.content.strip().split(',')
@@ -268,9 +287,9 @@ class UploadPage(ttk.Frame):
         image_path = filedialog.askopenfilename(title="Select an Image File",
                                                filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;")])
         if image_path:
-            self.display_and_label_image(image_path)
+            self.display_and_labelImage(image_path)
 
-    def display_and_label_image(self, image_path):
+    def display_and_labelImage(self, image_path):
         global XInputs
         if image_path.lower().endswith(('.png', '.jpg', '.jpeg')):
             self.image_path = image_path
@@ -295,7 +314,7 @@ class UploadPage(ttk.Frame):
             self.analysis_message_var.set("Valid image, starting Machine Learning Inference")
             self.analysis_message_var2.set("")
 
-            XInputs = label_image(image_path)
+            XInputs = labelImage(image_path)
             
 
 
