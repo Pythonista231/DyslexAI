@@ -20,7 +20,7 @@ client = OpenAI(api_key=openai_api_key)
 
 
 def testModel(logRegModel): # this is a function that takes a logistic regression model as input and uses testing data to test its accuracy and performance. 
-    dfTest = pd.read_csv('"https://raw.githubusercontent.com/Pythonista231/DyslexAI/refs/heads/main/images_dataset%20(1).csv"') #loading the data from the csv file.    
+    dfTest = pd.read_csv('https://raw.githubusercontent.com/Pythonista231/DyslexAI/refs/heads/main/testingDataCSV.txt') #loading the data from the csv file.    
     
     xTest = df.drop(columns=['image_path', 'dyslexic']).values  # features
     yTest = df['dyslexic'].values  
