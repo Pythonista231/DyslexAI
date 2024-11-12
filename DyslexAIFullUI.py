@@ -2,9 +2,9 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs import Messagebox
-# from tkinter import filedialog
-import matplotlib.pyplot as plt
+from tkinter import filedialog
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import time
 import pandas as pd
@@ -16,24 +16,23 @@ from PIL import Image, ImageTk
 import tkinter as tk
 
 
-openai_api_key = 'enter your openai api key here. ' 
-client = OpenAI(api_key=openai_api_key)
+openaiApiKey = 'enter openai api key here' 
+client = OpenAI(api_key=openaiApiKey)
 
 
 def testModel(logRegModel): # this is a function that takes a logistic regression model as input and uses testing data to test its accuracy and performance. 
-    dfTest = pd.read_csv('https://raw.githubusercontent.com/Pythonista231/DyslexAI/refs/heads/main/testingDataCSV.txt') #loading the data from the csv file.    
-    
-    xTest = df.drop(columns=['image_path', 'dyslexic']).values  # features
+    dfTest = pd.read_csv('https://raw.githubusercontent.com/Pythonista231/DyslexAI/refs/heads/main/trainingDataCSV.txt') #loading the data from the csv file.   
+    xTest = df.drop(columns=['imagePath', 'dyslexic']).values  # features
     yTest = df['dyslexic'].values  
 
-    yPredicted = model.predict(xTest)
-    accuracy = accuracy_score(yTest, yPred)
-    precition = precisionScore(yTest, yPred)
-    recall = recall_score(yTest, yPred)
-    f1 = f1_score(yTest, yPred)
+    yPredicted = logRegModel.predict(xTest)
+    accuracy = accuracy_score(yTest, yPredicted)
+    precision = precision_score(yTest, yPredicted)
+    recall = recall_score(yTest, yPredicted)
+    f1 = f1_score(yTest, yPredicted)
 
     print("Model Evaluation:")
-    print(f"Accuracy: {accuracy:.4f}")
+    print(f"Accuracy: {accuracy*100:.4f} (% of correct classifications)")
     print(f"Precision: {precision:.4f}")
     print(f"Recall: {recall:.4f}")
     print(f"F1 Score: {f1:.4f}")
@@ -42,31 +41,32 @@ def testModel(logRegModel): # this is a function that takes a logistic regressio
 # function to load the data and train the model, then returns the LogReg model itself. 
 def loadModel():
     global LogRegModel, df
-    df = pd.read_csv('https://raw.githubusercontent.com/Pythonista231/DyslexAI/refs/heads/main/trainingDataCSV.txt') #loads the data from csv file. 
-    
-    x = df.drop(columns=['image_path', 'dyslexic']).values  # features
+    df = pd.read_csv("https://raw.githubusercontent.com/Pythonista231/DyslexAI/refs/heads/main/testingDataCSV.txt") #loads the data from csv file. 
+    x = df.drop(columns=['imagePath', 'dyslexic']).values  # features
     y = df['dyslexic'].values 
 
     LogRegModel = LogisticRegression()
     LogRegModel.fit(x, y)
+    testModel(LogRegModel) # this is a function that tests the model we made for performance and prints the results. 
     return LogRegModel
+
 
 LogRegModel = loadModel()
 
 
 
 # this is a function which takes an image path and labels the values of its feature, this is so that it could then be used in logistic regression once labelled. 
-def labelImage(image_path):
+def labelImage(imagePath):
     global XInputs
 
-    def encode_image(image_path): 
-        with open(image_path, "rb") as image_file: 
-            return base64.b64encode(image_file.read()).decode('utf-8')
+    def encodeImage(imagePath): 
+        with open(imagePath, "rb") as imageFile: 
+            return base64.b64encode(imageFile.read()).decode('utf-8')
 
-    base64_image = encode_image(image_path)
+    base64Image = encodeImage(imagePath)
 
-    idx = image_path.rfind('.')
-    image_type = image_path[idx + 1: ]
+    idx = imagePath.rfind('.')
+    imageType = imagePath[idx + 1: ]
 
     try: #openai api call to label the values of the first 3 features. this has to be done in order for the logistic regression model to be used. 
         response = client.chat.completions.create(
@@ -87,7 +87,7 @@ def labelImage(image_path):
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": f"data:image/{image_type};base64,{base64_image}"
+                                "url": f"data:image/{imageType};base64,{base64Image}"
                             }
                         }
                     ]
@@ -99,19 +99,19 @@ def labelImage(image_path):
         Messagebox.show_error(f"Error with openai api call: {e}")
         return
 
-    list_response1 = response.choices[0].message.content.strip().split(',')
+    listResponse1 = response.choices[0].message.content.strip().split(',')
 
-    numberOfCorrections = int(list_response1[0])
-    numberOfWords = int(list_response1[1])
-    numberOfMisspelled = int(list_response1[2])
-    numberOfCaseMistakes = int(list_response1[3])
+    numberOfCorrections = int(listResponse1[0])
+    numberOfWords = int(listResponse1[1])
+    numberOfMisspelled = int(listResponse1[2])
+    numberOfCaseMistakes = int(listResponse1[3])
 
     # calculate percentages
-    percent_corrections = numberOfCorrections / numberOfWords * 100 
-    percent_misspelled = numberOfMisspelled / numberOfWords * 100 
-    percent_case_mistakes = numberOfCaseMistakes / numberOfWords * 100 
+    percentCorrections = numberOfCorrections / numberOfWords * 100 
+    percentMisspelled = numberOfMisspelled / numberOfWords * 100 
+    percentCaseMistakes = numberOfCaseMistakes / numberOfWords * 100 
 
-    list_response1 = [percent_corrections, percent_misspelled, percent_case_mistakes]
+    listResponse1 = [percentCorrections, percentMisspelled, percentCaseMistakes]
 
     #second api call to label last three features. 
     try:
@@ -128,12 +128,12 @@ def labelImage(image_path):
                     "content": [
                         {
                             "type": "text", 
-                            "text": "look at the picture, I need you to firstly tell me a number between 1 and 3. 1 means that there is no or very little joining between letters, 2 means somewhat and 3 means good joining between letters. second i want you to tell me the ledgibility score of the handwriting, 1-3 again, 1 means not ledgible, 2 means ledgible, 3 means very ledgible. and lastly i want you to give me a number between 1 to 3, 3 means perfect or near perfect horizontal alignment of handwriting, 2 means medium alignment of handwriting, and 1 means horrible alignment of handwriting, e.g. if it's super sloped. "
+                            "text": "look at the picture, I need you to firstly tell me a number between 1 and 3. 1 means that there is no or very little joining between letters, 2 means somewhat and 3 means good joining between letters. second i want you to tell me the legibility score of the handwriting, 1-3 again, 1 means not ledgible, 2 means ledgible, 3 means very ledgible. and lastly i want you to give me a number between 1 to 3, 3 means perfect or near perfect horizontal alignment of handwriting, 2 means medium alignment of handwriting, and 1 means horrible alignment of handwriting, e.g. if it's super sloped. "
                         },
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": f"data:image/jpg;base64,{base64_image}"
+                                "url": f"data:image/jpg;base64,{base64Image}"
                             }
                         }
                     ]
@@ -147,10 +147,9 @@ def labelImage(image_path):
         Messagebox.show_error(f"Error with openai api call: {e}")
         return
 
-    list_response2 = response2.choices[0].message.content.strip().split(',')
+    listResponse2 = response2.choices[0].message.content.strip().split(',')
 
-    XInputs = list_response1 + list_response2
-
+    XInputs = listResponse1 + listResponse2
     return XInputs
 
 
@@ -163,16 +162,16 @@ class Application(ttk.Window):
         super().__init__()
 
         self.title("Dyslexia Detection Application")
-        self.geometry("1800x1200")
+        self.geometry("1500x1100")
 
 
         style = ttk.Style()
         style.theme_use('superhero')
 
         #initialise widgets: 
-        self.create_widgets()
+        self.createWidgets()
 
-    def create_widgets(self): 
+    def createWidgets(self): 
         global frames
 
         # sidebar
@@ -180,20 +179,19 @@ class Application(ttk.Window):
         self.sidebar.pack(side=LEFT, fill=BOTH)
 
         #  title
-        self.logo_label = ttk.Label(self.sidebar, text="DyslexAI", font=("Helvetica", 20, "bold"), bootstyle="inverse-primary")
-        self.logo_label.pack(pady=20)
+        self.logoLabel = ttk.Label(self.sidebar, text="DyslexAI", font=("Helvetica", 20, "bold"), bootstyle="inverse-primary")
+        self.logoLabel.pack(pady=20)
 
         # Navigation buttons
-        self.nav_buttons = {}
-        buttons = [("Home", self.show_home),
-                   ("Upload", self.show_upload),
-                   ("Analysis", self.show_analysis),
-                  ("Help", self.show_help)]
+        self.navButtons = {}
+        buttons = [("Home", self.showHome),
+                   ("Upload", self.showUpload),
+                   ("Analysis", self.showAnalysis)]
 
         for (text, command) in buttons:
             btn = ttk.Button(self.sidebar, text=text, command=command, bootstyle="outline-light")
             btn.pack(pady=5, fill=X, padx=10)
-            self.nav_buttons[text] = btn
+            self.navButtons[text] = btn
         
         self.container = ttk.Frame(self)
         self.container.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -201,31 +199,31 @@ class Application(ttk.Window):
         #frames: 
         frames = {}
         for F in (HomePage, UploadPage, AnalysisPage):
-            page_name = F.__name__
+            pageName = F.__name__
             frame = F(parent=self.container, controller=self)
-            frames[page_name] = frame
+            frames[pageName] = frame
             frame.grid(row=0, column=0, sticky=NSEW)
             if F == AnalysisPage: 
-                frame.create_widgets()
+                frame.createWidgets()
 
         
 
-        self.show_frame("HomePage") #default 
+        self.showFrame("HomePage") #default 
 
-    def show_frame(self, page_name):
-        frame = frames[page_name]
+    def showFrame(self, pageName):
+        frame = frames[pageName]
         frame.tkraise()
 
-    def show_home(self):
-        self.show_frame("HomePage")
+    def showHome(self):
+        self.showFrame("HomePage")
 
-    def show_upload(self):
-        self.show_frame("UploadPage")
+    def showUpload(self):
+        self.showFrame("UploadPage")
 
-    def show_analysis(self):
-        self.show_frame("AnalysisPage")
+    def showAnalysis(self):
+        self.showFrame("AnalysisPage")
 
-    def on_closing(self):
+    def onClosing(self):
         self.destroy()
 
 
@@ -235,17 +233,17 @@ class HomePage(ttk.Frame):
         super().__init__(parent)
         self.controller = controller
         self.configure(padding=20)
-        self.create_widgets()
+        self.createWidgets()
 
-    def create_widgets(self):
+    def createWidgets(self):
         #title
-        title_label = ttk.Label(self, text="Welcome to DislexAI", font=("Helvetica", 24, "bold"), anchor="center", justify="center")
-        title_label.pack(pady=20, fill="x", expand=True)
+        titleLabel = ttk.Label(self, text="Welcome to DislexAI", font=("Helvetica", 24, "bold"), anchor="center", justify="center")
+        titleLabel.pack(pady=20, fill="x", expand=True)
 
         #description
         desc = "Empowering educators and individuals to detect Dyslexia early through Machine Learning."
-        title_label = ttk.Label(self, text=desc, font=("Helvetica", 14), anchor="center", justify="center")
-        title_label.pack(pady=10, fill="x", expand=True)
+        titleLabel = ttk.Label(self, text=desc, font=("Helvetica", 14), anchor="center", justify="center")
+        titleLabel.pack(pady=10, fill="x", expand=True)
 
 class UploadPage(ttk.Frame):
     def __init__(self, parent, controller):
@@ -253,69 +251,69 @@ class UploadPage(ttk.Frame):
         self.controller = controller
         self.img = None
         self.configure(padding=20)
-        self.create_widgets()
+        self.createWidgets()
 
-    def create_widgets(self):
+    def createWidgets(self):
 
         # upload area
-        title_label = ttk.Label(self, text="Upload A Handwriting Sample (~ 3 sentences)", font=("Helvetica", 18, "bold"), anchor="center", justify="center")
-        title_label.pack(pady=40, fill="x", expand=True)
+        titleLabel = ttk.Label(self, text="Upload A Handwriting Sample (~ 3 sentences)", font=("Helvetica", 18, "bold"), anchor="center", justify="center")
+        titleLabel.pack(pady=40, fill="x", expand=True)
 
         # select image button
-        select_btn = ttk.Button(self, text="Select Handwriting Sample Image", command=self.select_image, bootstyle="success")
-        select_btn.pack(pady=40)
+        selectBtn = ttk.Button(self, text="Select Handwriting Sample Image", command=self.selectImage, bootstyle="success")
+        selectBtn.pack(pady=40)
 
         # File Name Display
-        self.file_name_var = tk.StringVar(value="No file selected")
-        file_name_label = ttk.Label(self, textvariable=self.file_name_var, font=("Helvetica", 12))
-        file_name_label.pack(pady=5)
+        self.fileNameVar = tk.StringVar(value="No file selected")
+        fileNameLabel = ttk.Label(self, textvariable=self.fileNameVar, font=("Helvetica", 12))
+        fileNameLabel.pack(pady=5)
 
         # image preview
-        self.image_preview = ttk.Label(self, bootstyle="secondary", anchor="center")
-        self.image_preview.pack(pady=10, padx=50, fill=BOTH, expand=True)
+        self.imagePreview = ttk.Label(self, bootstyle="secondary", anchor="center")
+        self.imagePreview.pack(pady=10, padx=50, fill=BOTH, expand=True)
 
         # analysis messages (2): 
-        self.analysis_message_var = tk.StringVar(value="")
-        analysis_msg_label = ttk.Label(self, textvariable=self.analysis_message_var, font=("Helvetica", 12), wraplength=800, justify="center")
-        analysis_msg_label.pack(pady=5)
+        self.analysisMessageVar = tk.StringVar(value="")
+        analysisMsgLabel = ttk.Label(self, textvariable=self.analysisMessageVar, font=("Helvetica", 12), wraplength=800, justify="center")
+        analysisMsgLabel.pack(pady=5)
 
-        self.analysis_message_var2 = tk.StringVar(value="")
-        analysis_msg_label2 = ttk.Label(self, textvariable=self.analysis_message_var2, font=("Helvetica", 12), wraplength=800, justify="center")
-        analysis_msg_label2.pack(pady=5)
+        self.analysisMessageVar2 = tk.StringVar(value="")
+        analysisMsgLabel2 = ttk.Label(self, textvariable=self.analysisMessageVar2, font=("Helvetica", 12), wraplength=800, justify="center")
+        analysisMsgLabel2.pack(pady=5)
 
-    def select_image(self):
-        global image_path
-        image_path = filedialog.askopenfilename(title="Select an Image File",
+    def selectImage(self):
+        global imagePath
+        imagePath = filedialog.askopenfilename(title="Select an Image File",
                                                filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;")])
-        if image_path:
-            self.display_and_labelImage(image_path)
+        if imagePath:
+            self.displayAndLabelImage(imagePath)
 
-    def display_and_labelImage(self, image_path):
+    def displayAndLabelImage(self, imagePath):
         global XInputs
-        if image_path.lower().endswith(('.png', '.jpg', '.jpeg')):
-            self.image_path = image_path
-            self.image_type = image_path.split('.')[-1]
-            file_name = os.path.basename(image_path)
-            self.file_name_var.set(f"Selected File: {file_name}")
+        if imagePath.lower().endswith(('.png', '.jpg', '.jpeg')):
+            self.imagePath = imagePath
+            self.imageType = imagePath.split('.')[-1]
+            fileName = os.path.basename(imagePath)
+            self.fileNameVar.set(f"Selected File: {fileName}")
 
             # Load and display image
             try:
-                img = Image.open(image_path)
+                img = Image.open(imagePath)
                 img.thumbnail((400, 400))
                 self.img = ImageTk.PhotoImage(img)
-                self.image_preview.configure(image=self.img, borderwidth=2, relief="groove")
+                self.imagePreview.configure(image=self.img, borderwidth=2, relief="groove")
             except Exception as e:
                 Messagebox.show_error("Invalid image", "The selected file is not a valid image.")
-                self.image_preview.configure(image='')
-                self.file_name_var.set("No file selected")
-                self.analysis_message_var.set("")
-                self.analysis_message_var2.set("")
+                self.imagePreview.configure(image='')
+                self.fileNameVar.set("No file selected")
+                self.analysisMessageVar.set("")
+                self.analysisMessageVar2.set("")
                 return
 
-            self.analysis_message_var.set("Valid image, starting Machine Learning Inference")
-            self.analysis_message_var2.set("")
+            self.analysisMessageVar.set("Valid image, click 'Ananlysis' to start Machine Learning inference")
+            self.analysisMessageVar2.set("")
 
-            XInputs = labelImage(image_path)
+            XInputs = labelImage(imagePath)
             
 
 
@@ -327,93 +325,96 @@ class AnalysisPage(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        self.analysis_results = None
-        self.current_factor = '% corrections to words'  # Default factor
+        self.analysisResults = None
+        self.currentFactor = '% corrections to words'  # Default factor
         self.configure(padding=20)
 
-    def create_widgets(self):
-        main_layout = ttk.Frame(self)
-        main_layout.pack(fill=BOTH, expand=True, padx=10, pady=10)
+    def createWidgets(self):
+        mainLayout = ttk.Frame(self)
+        mainLayout.pack(fill=BOTH, expand=True, padx=10, pady=10)
 
         # Title
-        title_label = ttk.Label(main_layout, text="Image Analysis", font=("Helvetica", 20, "bold"))
-        title_label.pack(pady=10)
+        titleLabel = ttk.Label(mainLayout, text="Image Analysis", font=("Helvetica", 20, "bold"))
+        titleLabel.pack(pady=10)
 
         # Start analysis button
-        self.start_analysis_btn = ttk.Button(main_layout, text="Start Analysis", command=self.start_analysis, bootstyle="success")
-        self.start_analysis_btn.pack(pady=10)
+        self.startAnalysisBtn = ttk.Button(mainLayout, text="Start Analysis", command=self.startAnalysis, bootstyle="success")
+        self.startAnalysisBtn.pack(pady=10)
 
         # Progress bar 
-        self.progress = ttk.Progressbar(main_layout, mode='determinate', length=400)
+        self.progress = ttk.Progressbar(mainLayout, mode='determinate', length=400)
         self.progress.pack(pady=10)
 
         # Analysis results sections
-        results_frame = ttk.Frame(main_layout)
-        results_frame.pack(pady=10, fill=BOTH, expand=True)
+        resultsFrame = ttk.Frame(mainLayout)
+        resultsFrame.pack(pady=10, fill=BOTH, expand=True)
 
         # Left Side: graph and factor buttons 
-        left_frame = ttk.Frame(results_frame)
-        left_frame.pack(side=LEFT, fill=BOTH, expand=True, padx=10)
+        leftFrame = ttk.Frame(resultsFrame)
+        leftFrame.pack(side=LEFT, fill=BOTH, expand=True, padx=10)
         
         # features. 
-        factors = ['% corrections to words', '% spelling error', '% case mistakes', 'joining', 'ledgibility', 'line alignment']
-        self.factor_var = tk.StringVar(value=self.current_factor)
+        factors = ['% corrections to words', '% spelling error', '% case mistakes', 'joining', 'legibility', 'line alignment']
+        self.factorVar = tk.StringVar(value=self.currentFactor)
 
-        button_frame = ttk.LabelFrame(left_frame, text="Select Factor")
-        button_frame.pack(pady=5)
+        buttonFrame = ttk.LabelFrame(leftFrame, text="Select Factor")
+        buttonFrame.pack(pady=5)
 
         for factor in factors:
-            btn = ttk.Radiobutton(button_frame, text=factor, variable=self.factor_var, value=factor, command=self.change_factor, bootstyle="info")
+            btn = ttk.Radiobutton(buttonFrame, text=factor, variable=self.factorVar, value=factor, command=self.changeFactor, bootstyle="info")
             btn.pack(side=LEFT, padx=2)
 
         # Graph title
-        self.graph_title = ttk.Label(left_frame, text=self.current_factor, font=("Helvetica", 14, "bold"))
-        self.graph_title.pack(pady=5)
+        self.graphTitle = ttk.Label(leftFrame, text=self.currentFactor, font=("Helvetica", 14, "bold"))
+        self.graphTitle.pack(pady=5)
 
         #matplotlib figure. 
         self.figure = plt.Figure(figsize=(5, 4), dpi=100)
         self.ax = self.figure.add_subplot(111)  # Create an Axes object
-        self.canvas = FigureCanvasTkAgg(self.figure, master=left_frame)
+        self.canvas = FigureCanvasTkAgg(self.figure, master=leftFrame)
         self.canvas.get_tk_widget().pack(fill = BOTH, expand=  True)       
 
         
         # Right side : results
-        right_frame = ttk.Frame(results_frame)
-        right_frame.pack(side=RIGHT, fill=BOTH, expand=True, padx=10)
+        rightFrame = ttk.Frame(resultsFrame)
+        rightFrame.pack(side=RIGHT, fill=BOTH, expand=True, padx=10)
 
         # Percentages and results frame
-        results_inner_frame = ttk.LabelFrame(right_frame, text="Analysis Results")
-        results_inner_frame.pack(fill=BOTH, expand=True)
+        resultsInnerFrame = ttk.LabelFrame(rightFrame, text="Analysis Results")
+        resultsInnerFrame.pack(fill=BOTH, expand=True)
 
         # Percentages labels
         for factor in factors:
-            frame = ttk.Frame(results_inner_frame)
+            frame = ttk.Frame(resultsInnerFrame)
             frame.pack(anchor="w", padx=10, pady=2)
-            lbl = ttk.Label(frame, text=f"{factor}:", font=("Helvetica", 12, "bold"))
+            if factor.strip() == 'line alignment' or factor.strip() == 'legibility' or factor.strip() == 'joining': 
+                lbl = ttk.Label(frame, text=f"{factor} (1-3):", font=("Helvetica", 12, "bold"))
+            else: 
+                lbl = ttk.Label(frame, text=f"{factor}:", font=("Helvetica", 12, "bold"))
             lbl.pack(side=LEFT)
             val = ttk.Label(frame, text="N/A", font=("Helvetica", 12))
             val.pack(side=LEFT, padx=5)
-            frames["AnalysisPage"].result_labels = getattr(self, 'result_labels', {})
-            self.result_labels[factor] = val
+            frames["AnalysisPage"].resultLabels = getattr(self, 'resultLabels', {})
+            self.resultLabels[factor] = val
 
         # Dyslexia prob: 
-        dys_label = ttk.Label(results_inner_frame, text="% Chance of Dyslexia:", font=("Helvetica", 14, "bold"))
-        dys_label.pack(pady=10)
-        self.dyslexia_var = tk.StringVar(value="N/A")
-        dys_value = ttk.Label(results_inner_frame, textvariable=self.dyslexia_var, font=("Helvetica", 12))
-        dys_value.pack()
+        dysLabel = ttk.Label(resultsInnerFrame, text="% Chance of Dyslexia:", font=("Helvetica", 16, "bold"))
+        dysLabel.pack(pady=25)
+        self.dyslexiaVar = tk.StringVar(value="N/A")
+        dysValue = ttk.Label(resultsInnerFrame, textvariable=self.dyslexiaVar, font=("Helvetica", 12))
+        dysValue.pack()
 
-    def start_analysis(self): # this is run by the start_analysis button. 
-        upload_page = frames["UploadPage"]
-        if not image_path:
+    def startAnalysis(self): # this is run by the startAnalysis button. 
+        uploadPage = frames["UploadPage"]
+        if not imagePath:
             Messagebox.show_warning("No Image", "Please upload an image in the Upload section.")
             return
 
-        self.start_analysis_btn.state(['disabled'])
+        self.startAnalysisBtn.state(['disabled'])
         self.progress['value'] = 0
-        self.run_analysis()
+        self.runAnalysis()
 
-    def run_analysis(self):
+    def runAnalysis(self):
         global XInputs, XInputsNumpy
         # Simulate analysis time
         for i in range(1, 101):
@@ -424,73 +425,69 @@ class AnalysisPage(ttk.Frame):
         # Perform analysis
 
         #finding their probability of dyslexia: 
-        X_Vals = {'% corrections to words': float(XInputs[0]), 
+        XVals = {'% corrections to words': float(XInputs[0]), 
               '% spelling error':float(XInputs[1]), 
               '% case mistakes':float(XInputs[2]), 
               'joining':float(XInputs[3]),
-              'ledgibility':float(XInputs[4]),
+              'legibility':float(XInputs[4]),
               'line alignment':float(XInputs[5])
               
              }
-        X_df = pd.DataFrame(X_Vals, index = [0])
-        XInputsNumpy = X_df.to_numpy()
+        XDf = pd.DataFrame(XVals, index = [0])
+        XInputsNumpy = XDf.to_numpy()
         XInputsNumpy = XInputsNumpy.reshape(1, -1)
 
-        dyslexia_prob = float(LogRegModel.predict_proba(XInputsNumpy)[:,1][0]) * 100
+        dyslexiaProb = float(LogRegModel.predict_proba(XInputsNumpy)[:,1][0]) * 100
 
 
         # Prepare results
-        your_results = {}
-        factors = [r'% corrections to words', r'% spelling error', r'% case mistakes', 'joining', 'ledgibility', 'line alignment']
+        yourResults = {}
+        factors = [r'% corrections to words', r'% spelling error', r'% case mistakes', 'joining', 'legibility', 'line alignment']
         for idx, factor in enumerate(factors):
-            your_results[factor] = XInputs[idx]
+            yourResults[factor] = XInputs[idx]
 
-        self.analysis_results = {
-            'your_results': your_results
+        self.analysisResults = {
+            'yourResults': yourResults
         }
 
-        print("your results:")
-        print(self.analysis_results)
-
         # Update GUI with results
-        self.after(0, self.update_results, dyslexia_prob)
+        self.after(0, self.updateResults, dyslexiaProb)
 
-    def update_results(self, dyslexia_probability):
+    def updateResults(self, dyslexiaProbability):
         # Update "Your Results" labels
-        for factor, value in self.analysis_results['your_results'].items():
-            self.result_labels[factor].config(text=f"{round(float(value), 3)}")
+        for factor, value in self.analysisResults['yourResults'].items():
+            self.resultLabels[factor].config(text=f"{round(float(value), 3)}")
 
-        self.dyslexia_var.set(f"{round(float(dyslexia_probability), 3)}%")
+        self.dyslexiaVar.set(f"{round(float(dyslexiaProbability), 3)}%")
 
         # Display graph for the current factor
-        self.show_graph(self.current_factor)
+        self.showGraph(self.currentFactor)
 
-        self.start_analysis_btn.state(['!disabled'])
+        self.startAnalysisBtn.state(['!disabled'])
 
-    def change_factor(self):
-        self.current_factor = self.factor_var.get()
-        self.graph_title.config(text=self.current_factor)
-        self.show_graph(self.current_factor)
+    def changeFactor(self):
+        self.currentFactor = self.factorVar.get()
+        self.graphTitle.config(text=self.currentFactor)
+        self.showGraph(self.currentFactor)
 
-    def show_graph(self, factor):
-        if not hasattr(self, 'analysis_results'):
+    def showGraph(self, factor):
+        if not hasattr(self, 'analysisResults'):
             Messagebox.show_warning("No Results", 'Please perform analysis first - Click "Start Analysis".')
             return
 
-        your_result = float(self.analysis_results['your_results'].get(factor, 0.0))
+        yourResult = float(self.analysisResults['yourResults'].get(factor, 0.0))
 
         # Clear the previous plot
         self.ax.clear()
 
         # Plot training datapoints
         dyslexic = df['dyslexic']
-        print(f"This is what the dyslexic variable holds: {dyslexic}")
-        y_values = df[factor]
+        YValues = df[factor]
         colors = ['green' if x == 0 else 'red' for x in dyslexic]
-        self.ax.scatter(range(1, len(y_values)+1), y_values, c=colors, label='Training datapoints (red=dyslexic, green=non-dyslexic)')
+        self.ax.scatter(range(1, len(YValues)+1), YValues, c=colors, label='Training datapoints (red=dyslexic, green=non-dyslexic)')
 
         # Plot "Your Result" line
-        self.ax.axhline(y=your_result, color='blue', linestyle='-', label='Your Result')
+        self.ax.axhline(y=yourResult, color='blue', linestyle='-', label='Your Result')
 
         self.ax.set_xlabel("Training Datapoint Number")
         self.ax.set_ylabel(f"{factor} (%)")
