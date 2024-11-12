@@ -1,4 +1,4 @@
-image_path,% corrections to words,% spelling error,% case mistakes,joining,ledgibility,line alignment,dyslexic
+imagePath,% corrections to words,% spelling error,% case mistakes,joining,ledgibility,line alignment,dyslexic
 C:/Users/micha/Documents/dataDyslexic\1.jpg,20.588235294117645,14.705882352941178,14.705882352941178,1,2,3,1.0
 C:/Users/micha/Downloads/addToDyslexicTrainingData\21.jpg,11.11111111111111,1.8518518518518516,3.7037037037037033,2,3,3,1
 C:/Users/micha/Downloads/addToDyslexicTrainingData\22.jpg,9.836065573770492,6.557377049180328,6.557377049180328,1,2,2,1
