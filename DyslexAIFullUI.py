@@ -16,12 +16,12 @@ from PIL import Image, ImageTk
 import tkinter as tk
 
 
-openaiApiKey = 'enter openai api key here' 
+openaiApiKey = 'enter your openai api key here'
 client = OpenAI(api_key=openaiApiKey)
 
 
 def testModel(logRegModel): # this is a function that takes a logistic regression model as input and uses testing data to test its accuracy and performance. 
-    dfTest = pd.read_csv('https://raw.githubusercontent.com/Pythonista231/DyslexAI/refs/heads/main/trainingDataCSV.txt') #loading the data from the csv file.   
+    dfTest = pd.read_csv("C:/Users/micha/Downloads/testingDataCSV.txt") #loading the data from the csv file.   
     xTest = df.drop(columns=['imagePath', 'dyslexic']).values  # features
     yTest = df['dyslexic'].values  
 
@@ -40,18 +40,18 @@ def testModel(logRegModel): # this is a function that takes a logistic regressio
 
 # function to load the data and train the model, then returns the LogReg model itself. 
 def loadModel():
-    global LogRegModel, df
-    df = pd.read_csv("https://raw.githubusercontent.com/Pythonista231/DyslexAI/refs/heads/main/testingDataCSV.txt") #loads the data from csv file. 
+    global df
+    df = pd.read_csv("C:/Users/micha/Downloads/trainingDataCSV (1).txt") #loads the data from csv file. 
     x = df.drop(columns=['imagePath', 'dyslexic']).values  # features
     y = df['dyslexic'].values 
 
-    LogRegModel = LogisticRegression()
-    LogRegModel.fit(x, y)
-    testModel(LogRegModel) # this is a function that tests the model we made for performance and prints the results. 
-    return LogRegModel
+    logRegModel = LogisticRegression()
+    logRegModel.fit(x, y)
+    testModel(logRegModel) # this is a function that tests the model we made for performance and prints the results. 
+    return logRegModel
 
 
-LogRegModel = loadModel()
+logRegModel = loadModel()
 
 
 
@@ -437,7 +437,7 @@ class AnalysisPage(ttk.Frame):
         XInputsNumpy = XDf.to_numpy()
         XInputsNumpy = XInputsNumpy.reshape(1, -1)
 
-        dyslexiaProb = float(LogRegModel.predict_proba(XInputsNumpy)[:,1][0]) * 100
+        dyslexiaProb = float(logRegModel.predict_proba(XInputsNumpy)[:,1][0]) * 100
 
 
         # Prepare results
