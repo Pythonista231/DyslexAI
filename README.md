@@ -13,6 +13,7 @@ Features: % word corrections, % spelling mistakes, % case mistakes, letter joini
 This is all supercharged by IBM's snapML library, providing fast training and inference on Generalised Linear Models (e.g. LogReg).
 
 More than 90% accuracy on testing data. 
+<br/><br/>
 
 
 
@@ -23,7 +24,7 @@ More than 90% accuracy on testing data.
 
 The raw images were labelled using an LLM, providing values for each of the relevant features taken into account, this enabled a logistic regression model to be trained. 
 
-
+<br/><br/>
 
 
 
@@ -36,7 +37,7 @@ Representing more than 80% of global learning disabilities, dyslexia is by far t
 The goal is clear: to solve the dyslexia diagnosis dilemma. We aim to create a ubiquitous, easy-to-use early intervention tool that helps identify dyslexic tendencies at an early age, ensuring that students receive the support they need sooner rather than later. By focusing on early detection, we can open doors for students who would otherwise struggle without knowing why. Dyslexia diagnosis should be available to all.
 
 
-
+<br/><br/>
 ## Misc
 
 Note: ML isn't perfect and inaccuracies are present.
@@ -44,7 +45,7 @@ Note: ML isn't perfect and inaccuracies are present.
 Technical Team: Michael Chotoveli (Leader), Louis Liu, Benoit Ben Moubamba, George Gui
 
 
-
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 ___________________________________________________________________
 ## To run DyslexAIFullUI.py please refer to this guide on commands to execute on your terminal. 
