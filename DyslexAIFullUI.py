@@ -425,16 +425,8 @@ class AnalysisPage(ttk.Frame):
         # Perform analysis
 
         #finding their probability of dyslexia: 
-        XVals = {'% corrections to words': float(XInputs[0]), 
-              '% spelling error':float(XInputs[1]), 
-              '% case mistakes':float(XInputs[2]), 
-              'joining':float(XInputs[3]),
-              'legibility':float(XInputs[4]),
-              'line alignment':float(XInputs[5])
-              
-             }
-        XDf = pd.DataFrame(XVals, index = [0])
-        XInputsNumpy = XDf.to_numpy()
+        
+        XInputsNumpy = np.array(XInputs)
         XInputsNumpy = XInputsNumpy.reshape(1, -1)
 
         dyslexiaProb = float(logRegModel.predict_proba(XInputsNumpy)[:,1][0]) * 100
