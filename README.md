@@ -1,6 +1,6 @@
 # DyslexAI
 
-##Logistic regression to automate dyslexia detection from a handwriting sample. 
+### Logistic regression to automate dyslexia detection from a handwriting sample. 
 
 To run version without UI through jupyter notebooks on the IBM Z Mainframe I configured: http://148.100.109.82:38888/lab/tree/DyslexAIJupyter.ipynb 
 (jupyter doesn't support GUIs)
@@ -17,7 +17,7 @@ More than 90% accuracy on testing data.
 
 
 
-##Data: 
+## Data: 
 
 200 images were downloaded (credits: srummanf github account) for training & testing (80/20). It contains dyslexic and non dyslexic handwriting samples. This dataset will grow in the future to enable more accurate predictions.
 
@@ -28,7 +28,7 @@ The raw images were labelled using an LLM, providing values for each of the rele
 
 
 
-##Motivation: 
+## Motivation: 
 
 
 Representing more than 80% of global learning disabilities, dyslexia is by far the most widespread. Around one in ten people suffer from dyslexia. It therefore is a major issue in the education sector, as by extension 1 in 10 students might be affected by it, depriving young students of an enriching academic experience. Even more concerning is that many cases go undiagnosed for too long, delaying critical intervention, especially at younger ages when essential foundations of knowledge are taught.
@@ -37,7 +37,7 @@ The goal is clear: to solve the dyslexia diagnosis dilemma. We aim to create a u
 
 
 
-##Misc
+## Misc
 
 Note: ML isn't perfect and inaccuracies are present.
 
