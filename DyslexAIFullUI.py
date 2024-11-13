@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import time
 import pandas as pd
+import numpy as pd
 import os
 from snapml import LogisticRegression
 from openai import OpenAI
