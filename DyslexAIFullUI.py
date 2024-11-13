@@ -163,7 +163,7 @@ class Application(ttk.Window):
         super().__init__()
 
         self.title("Dyslexia Detection Application")
-        self.geometry("1500x1100")
+        self.geometry("1500x1000")
 
 
         style = ttk.Style()
