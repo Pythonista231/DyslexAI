@@ -1,6 +1,6 @@
 # DyslexAI
 
-###Logistic regression to automate dyslexia detection from a handwriting sample. 
+##Logistic regression to automate dyslexia detection from a handwriting sample. 
 
 To run version without UI through jupyter notebooks on the IBM Z Mainframe I configured: http://148.100.109.82:38888/lab/tree/DyslexAIJupyter.ipynb 
 (jupyter doesn't support GUIs)
