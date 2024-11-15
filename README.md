@@ -3,6 +3,10 @@
 
 
 
+https://github.com/user-attachments/assets/d7a08eb7-fd91-413c-8861-5422b27e2962
+
+
+
 
 ## Logistic regression to automate dyslexia detection from a handwriting sample. 
 
