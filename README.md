@@ -1,7 +1,6 @@
 
 # DyslexAI
 
-https://github.com/user-attachments/assets/5a704778-b435-4290-b043-ae723145eb6c
 
 
 
