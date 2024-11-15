@@ -238,7 +238,7 @@ class HomePage(ttk.Frame):
 
     def createWidgets(self):
         #title
-        titleLabel = ttk.Label(self, text="Welcome to DislexAI", font=("Helvetica", 24, "bold"), anchor="center", justify="center")
+        titleLabel = ttk.Label(self, text="Welcome to DyslexAI", font=("Helvetica", 24, "bold"), anchor="center", justify="center")
         titleLabel.pack(pady=20, fill="x", expand=True)
 
         #description
@@ -311,7 +311,7 @@ class UploadPage(ttk.Frame):
                 self.analysisMessageVar2.set("")
                 return
 
-            self.analysisMessageVar.set("Valid image, click 'Ananlysis' to start Machine Learning inference")
+            self.analysisMessageVar.set("Valid image, click 'Analysis' to start Machine Learning inference")
             self.analysisMessageVar2.set("")
 
             XInputs = labelImage(imagePath)
